@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+
+# Data outputs 
+data/processed/* 
+!data/processed/.gitkeep 
+monitoring/reports/* 
+!monitoring/reports/.gitkeep 
+ 
+# Force include raw dataset 
+!data/raw/ph_motorcycle_loans.csv
+
+# Model artifacts
+*.joblib
+models/
+mlruns/
+mlflow.db
+mlflow.db-*
+
+# Force include critical training artifacts 
+!training/artifacts/model.pkl 
+!training/artifacts/metrics.json 
+!training/artifacts/feature_list.json 
+!training/artifacts/confusion_matrix.png 
+!training/artifacts/feature_importance.png 
+!training/artifacts/test_predictions.csv
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Debug and check files — do not push these 
+check*.txt 
+clean*.txt 
+project_files.txt 
+docker_build.txt 
+logs_*.txt 
+pytest_results.txt 
+qa_results.txt 
+validation_results.txt 
+tree_output*.txt 
+docker_logs*.txt 
+v/ 
+notebooks/

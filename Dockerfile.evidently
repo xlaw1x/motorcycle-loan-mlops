@@ -1,0 +1,16 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+COPY requirements-monitoring.txt .
+
+RUN pip install --no-cache-dir -r requirements-monitoring.txt
+
+COPY . .
+
+EXPOSE 8080
+
+CMD ["sh", "-c", "python monitoring/evidently_report.py && python -m http.server 8080 --directory monitoring/reports"]

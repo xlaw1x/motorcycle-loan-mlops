@@ -1,0 +1,53 @@
+{
+  "model_features": [
+    "bureau_score",
+    "down_payment_amount",
+    "res_years_at_current_city",
+    "res_years_at_current_address",
+    "interest_rate",
+    "loan_asset_cost",
+    "age",
+    "number_of_installments",
+    "total_income",
+    "years_in_occupation",
+    "number_of_dependents",
+    "loan_to_income_ratio",
+    "gender",
+    "channel",
+    "marital_status",
+    "manufacturer",
+    "occupation_type",
+    "res_resident_status",
+    "has_existing_loan"
+  ],
+  "numeric_features": [
+    "bureau_score",
+    "down_payment_amount",
+    "res_years_at_current_city",
+    "res_years_at_current_address",
+    "interest_rate",
+    "loan_asset_cost",
+    "age",
+    "number_of_installments",
+    "total_income",
+    "years_in_occupation",
+    "number_of_dependents",
+    "loan_to_income_ratio"
+  ],
+  "categorical_features": [
+    "gender",
+    "channel",
+    "marital_status",
+    "manufacturer",
+    "occupation_type",
+    "res_resident_status",
+    "has_existing_loan"
+  ],
+  "leakage_columns": [
+    "days_past_due",
+    "label_determination_date",
+    "loan_origination_date",
+    "TARGET",
+    "label_is_mature"
+  ]
+}

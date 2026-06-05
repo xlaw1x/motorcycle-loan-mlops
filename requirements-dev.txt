@@ -1,0 +1,15 @@
+fastapi
+great_expectations
+httpx
+joblib
+matplotlib
+mlflow
+numpy
+pandas
+pydantic
+pytest
+scikit-learn
+streamlit
+uvicorn
+xgboost==2.1.1
+prefect

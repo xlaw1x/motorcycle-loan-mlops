@@ -1,0 +1,58 @@
+name: MOTO2 MLOps CI Pipeline 
+ 
+on: 
+ push: 
+ pull_request: 
+ 
+jobs: 
+ test: 
+   runs-on: ubuntu-latest 
+ 
+   steps: 
+     - name: Checkout repository 
+       uses: actions/checkout@v4 
+ 
+     - name: Set up Python 3.10 
+       uses: actions/setup-python@v5 
+       with: 
+         python-version: "3.10" 
+ 
+     - name: Install dependencies 
+       run: | 
+         python -m pip install --upgrade pip 
+         pip install -r requirements-dev.txt 
+ 
+     - name: Train model 
+       run: | 
+         echo "Training XGBoost model on Philippine motorcycle loan dataset..." 
+         python training/train.py 
+         echo "Model training complete." 
+ 
+     - name: Verify model artifact exists 
+       run: | 
+         python -c " 
+         import joblib 
+         from pathlib import Path 
+         assert Path('training/artifacts/model.pkl').exists(), 'model.pkl not found after training' 
+         m = joblib.load('training/artifacts/model.pkl') 
+         print('Model loaded successfully after training') 
+         print('Model keys:', list(m.keys()) if isinstance(m, dict) else type(m)) 
+         " 
+ 
+     - name: Run dataset validation 
+       run: | 
+         echo "Running Great Expectations validation..." 
+         python validation/expectations.py 
+         echo "Validation complete." 
+ 
+     - name: Run pytest 
+       run: | 
+         echo "Running project readiness tests..." 
+         pytest -q 
+         echo "All tests passed." 
+ 
+     - name: Run QA check 
+       run: | 
+         echo "Running final QA check..." 
+         python qa/final_qa_check.py 
+         echo "QA check complete." 

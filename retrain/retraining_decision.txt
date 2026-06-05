@@ -1,0 +1,25 @@
+MOTO² Retraining Decision Report
+======================================
+
+Evaluation date: 2026-10-15
+Decision: NO RETRAINING REQUIRED YET
+
+Performance summary:
+- evaluation_date: 2026-10-15
+- matured_rows_evaluated: 434
+- actual_default_rate: 0.7995
+- auc_roc: 0.8586
+- precision: 0.8753
+- recall: 0.9712
+- f1: 0.9208
+- accuracy: 0.8664
+- true_negative: 39
+- false_positive: 48
+- false_negative: 10
+- true_positive: 337
+
+Reasons:
+- Model performance is still within acceptable thresholds.
+
+Label latency explanation:
+The model could not be fully evaluated at prediction time because actual loan outcomes were still pending. After labels matured, delayed performance was computed and used for the retraining decision.

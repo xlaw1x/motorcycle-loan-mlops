@@ -1,0 +1,68 @@
+================================================================================
+MOTO² Dataset Validation Report
+Validation engine: Great Expectations
+================================================================================
+[PASS] expect_table_columns_to_match_ordered_list: Great Expectations check passed.
+[PASS] expect_table_row_count_to_equal: Great Expectations check passed.
+[PASS] expect_column_pair_values_a_to_be_greater_than_b: Great Expectations check passed.
+[PASS] expect_column_pair_values_a_to_be_greater_than_b: Great Expectations check passed.
+[PASS] expect_column_pair_values_a_to_be_greater_than_b: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:loan_account_no: Great Expectations check passed.
+[PASS] expect_column_values_to_be_unique:loan_account_no: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:product_description: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:loan_origination_date: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:bureau_score: Great Expectations check passed.
+[PASS] expect_column_values_to_be_between:bureau_score: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:down_payment_amount: Great Expectations check passed.
+[PASS] expect_column_values_to_be_between:down_payment_amount: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:branch_name: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:res_years_at_current_city: Great Expectations check passed.
+[PASS] expect_column_values_to_be_between:res_years_at_current_city: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:res_years_at_current_address: Great Expectations check passed.
+[PASS] expect_column_values_to_be_between:res_years_at_current_address: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:interest_rate: Great Expectations check passed.
+[PASS] expect_column_values_to_be_between:interest_rate: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:loan_asset_cost: Great Expectations check passed.
+[PASS] expect_column_values_to_be_between:loan_asset_cost: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:gender: Great Expectations check passed.
+[PASS] expect_column_values_to_be_in_set:gender: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:channel: Great Expectations check passed.
+[PASS] expect_column_values_to_be_in_set:channel: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:age: Great Expectations check passed.
+[PASS] expect_column_values_to_be_between:age: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:number_of_installments: Great Expectations check passed.
+[PASS] expect_column_values_to_be_in_set:number_of_installments: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:res_city: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:res_province: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:total_income: Great Expectations check passed.
+[PASS] expect_column_values_to_be_between:total_income: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:asset_model: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:industry: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:nature_of_business: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:marital_status: Great Expectations check passed.
+[PASS] expect_column_values_to_be_in_set:marital_status: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:manufacturer: Great Expectations check passed.
+[PASS] expect_column_values_to_be_in_set:manufacturer: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:occupation_type: Great Expectations check passed.
+[PASS] expect_column_values_to_be_in_set:occupation_type: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:res_resident_status: Great Expectations check passed.
+[PASS] expect_column_values_to_be_in_set:res_resident_status: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:years_in_occupation: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:has_existing_loan: Great Expectations check passed.
+[PASS] expect_column_values_to_be_in_set:has_existing_loan: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:number_of_dependents: Great Expectations check passed.
+[PASS] expect_column_values_to_be_between:number_of_dependents: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:days_past_due: Great Expectations check passed.
+[PASS] expect_column_values_to_be_between:days_past_due: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:label_determination_date: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:label_is_mature: Great Expectations check passed.
+[PASS] expect_column_values_to_be_in_set:label_is_mature: Great Expectations check passed.
+[PASS] expect_column_values_to_not_be_null:TARGET: Great Expectations check passed.
+[PASS] expect_column_values_to_be_in_set:TARGET: Great Expectations check passed.
+[PASS] expect_column_values_to_be_in_set:TARGET: Great Expectations check passed.
+[PASS] expect_column_values_to_be_in_set:TARGET: Great Expectations check passed.
+[PASS] label_maturity_consistent: label_is_mature matches label_determination_date <= 2026-06-04.
+[PASS] mature_label_share: Mature label share is 78.68%.
+[INFO] leakage_guard_reminder: These columns must never be model features: ['days_past_due', 'label_determination_date', 'loan_origination_date', 'TARGET', 'label_is_mature']. They are allowed in the raw dataset, but training must exclude them.
+================================================================================
+FINAL RESULT: PASS, no blocking validation failures.

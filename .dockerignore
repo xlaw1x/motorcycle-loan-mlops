@@ -1,0 +1,10 @@
+﻿.venv/
+__pycache__/
+.pytest_cache/
+.git/
+mlruns/
+*.pyc
+*.pyo
+*.pyd
+*.db
+.env

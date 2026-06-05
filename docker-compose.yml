@@ -1,0 +1,83 @@
+﻿services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: moto-loan-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./training/artifacts:/app/training/artifacts
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: moto-loan-frontend
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - API_URL=http://api:8000
+    depends_on:
+      - api
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.mlflow
+    container_name: moto2-mlflow
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlflow.db:/mlflow/mlflow.db
+      - ./mlruns:/mlflow/mlruns
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  evidently:
+    build:
+      context: .
+      dockerfile: Dockerfile.evidently
+    container_name: moto2-evidently
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+      - ./monitoring/reports:/app/monitoring/reports
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  prefect:
+    build:
+      context: .
+      dockerfile: Dockerfile.prefect
+    container_name: moto2-prefect
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./data:/app/data
+      - ./training/artifacts:/app/training/artifacts
+      - ./pipeline:/app/pipeline
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PREFECT_API_URL=http://127.0.0.1:4200/api
+
+  prefect-flow:
+    build:
+      context: .
+      dockerfile: Dockerfile.prefect
+    container_name: moto2-prefect-flow
+    command: ["python", "pipeline/prefect_flow.py"]
+    volumes:
+      - ./data:/app/data
+      - ./training/artifacts:/app/training/artifacts
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PREFECT_API_URL=http://prefect:4200/api
+    depends_on:
+      - prefect
