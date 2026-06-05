@@ -40,6 +40,18 @@ Show artifacts in `training/artifacts/`:
 
 Explain that training uses matured labels only.
 
+If showing MLflow Registry, run:
+
+```powershell
+.\.venv\Scripts\python.exe training/train_with_mlflow.py
+```
+
+Then refresh the MLflow Models page:
+
+```text
+http://localhost:5000/#/models
+```
+
 ## 4. Start the API
 
 ```powershell

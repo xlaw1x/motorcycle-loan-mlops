@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
@@ -19,6 +20,10 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
+
+import mlflow
+import mlflow.sklearn
+from mlflow import MlflowClient
 
 
 RANDOM_SEED = 42
@@ -32,6 +37,8 @@ FEATURE_LIST_PATH = ARTIFACT_DIR / "feature_list.json"
 CONFUSION_MATRIX_PATH = ARTIFACT_DIR / "confusion_matrix.png"
 FEATURE_IMPORTANCE_PATH = ARTIFACT_DIR / "feature_importance.png"
 TEST_PREDICTIONS_PATH = ARTIFACT_DIR / "test_predictions.csv"
+
+REGISTERED_MODEL_NAME = "motorcycle-loan-model"
 
 TARGET_COLUMN = "TARGET"
 
@@ -72,12 +79,6 @@ MODEL_FEATURES = NUMERIC_FEATURES + CATEGORICAL_FEATURES
 
 
 def make_one_hot_encoder() -> OneHotEncoder:
-    """
-    Handles scikit-learn version differences.
-
-    Newer versions use sparse_output=False.
-    Older versions use sparse=False.
-    """
     try:
         return OneHotEncoder(handle_unknown="ignore", sparse_output=False)
     except TypeError:
@@ -142,10 +143,11 @@ def prepare_training_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
     return X, y
 
 
-def build_model(y_train: pd.Series) -> Tuple[str, Pipeline]:
+def build_model(y_train: pd.Series) -> Tuple[str, Pipeline, float]:
     """
     Try XGBoost first.
     If unavailable, use RandomForest as a local fallback.
+    Returns model_name, pipeline, and the scale_pos_weight used.
     """
     preprocessor = ColumnTransformer(
         transformers=[
@@ -159,11 +161,9 @@ def build_model(y_train: pd.Series) -> Tuple[str, Pipeline]:
     scale_pos_weight = negative_count / max(positive_count, 1)
 
     try:
-        from xgboost import XGBClassifier
-
         classifier = XGBClassifier(
-            n_estimators=250,
-            max_depth=3,
+            n_estimators=300,
+            max_depth=5,
             learning_rate=0.05,
             subsample=0.9,
             colsample_bytree=0.9,
@@ -196,7 +196,7 @@ def build_model(y_train: pd.Series) -> Tuple[str, Pipeline]:
         ]
     )
 
-    return model_name, pipeline
+    return model_name, pipeline, scale_pos_weight
 
 
 def get_transformed_feature_names(model: Pipeline) -> List[str]:
@@ -291,7 +291,7 @@ def save_artifacts(
     X_test: pd.DataFrame,
     y_test: pd.Series,
     y_proba: np.ndarray,
-) -> None:
+) -> dict:
     ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
 
     artifact = {
@@ -332,6 +332,66 @@ def save_artifacts(
     predictions_df["predicted_TARGET"] = (y_proba >= 0.35).astype(int)
     predictions_df.to_csv(TEST_PREDICTIONS_PATH, index=False)
 
+    return artifact
+
+
+def register_to_mlflow(
+    artifact: dict,
+    metrics: dict,
+    scale_pos_weight: float,
+) -> None:
+    """
+    Log params/metrics/tags, register the pipeline to the MLflow Model
+    Registry, and promote the new version to Production.
+    """
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    mlflow.set_experiment("motorcycle-loan")
+
+    with mlflow.start_run(run_name="xgboost_v1_baseline"):
+        mlflow.log_params(
+            {
+                "model_type": artifact["model_name"],
+                "n_estimators": 300,
+                "max_depth": 5,
+                "learning_rate": 0.05,
+                "scale_pos_weight": round(scale_pos_weight, 3),
+                "threshold": 0.35,
+            }
+        )
+        mlflow.log_metrics(
+            {
+                "auc_roc": metrics["auc_roc"],
+                "precision": metrics["precision"],
+                "recall": metrics["recall"],
+                "f1": metrics["f1"],
+                "accuracy": metrics["accuracy"],
+            }
+        )
+        mlflow.set_tags(
+            {
+                "trained_on": "matured_labels_only",
+                "dataset": "ph_synthetic_v1",
+            }
+        )
+        mlflow.sklearn.log_model(
+            sk_model=artifact["pipeline"],
+            artifact_path="model",
+            registered_model_name=REGISTERED_MODEL_NAME,
+        )
+
+    client = MlflowClient()
+    latest = client.get_latest_versions(REGISTERED_MODEL_NAME)[-1]
+    client.transition_model_version_stage(
+        name=REGISTERED_MODEL_NAME,
+        version=latest.version,
+        stage="Production",
+        archive_existing_versions=False,
+    )
+    print(
+        f"Registered & promoted {REGISTERED_MODEL_NAME} "
+        f"v{latest.version} to Production"
+    )
+
 
 def main() -> None:
     df = load_data()
@@ -348,7 +408,7 @@ def main() -> None:
     print(f"Train rows: {len(X_train):,}")
     print(f"Test rows: {len(X_test):,}")
 
-    model_name, model = build_model(y_train)
+    model_name, model, scale_pos_weight = build_model(y_train)
     print(f"Training model: {model_name}")
 
     model.fit(X_train, y_train)
@@ -365,7 +425,7 @@ def main() -> None:
     print("\nConfusion matrix:")
     print(cm)
 
-    save_artifacts(
+    artifact = save_artifacts(
         model=model,
         model_name=model_name,
         metrics=metrics,
@@ -382,6 +442,12 @@ def main() -> None:
     print(f"- {CONFUSION_MATRIX_PATH}")
     print(f"- {FEATURE_IMPORTANCE_PATH}")
     print(f"- {TEST_PREDICTIONS_PATH}")
+
+    register_to_mlflow(
+        artifact=artifact,
+        metrics=metrics,
+        scale_pos_weight=scale_pos_weight,
+    )
 
     print("\nStep 4 complete. Model trained using matured labels only.")
 

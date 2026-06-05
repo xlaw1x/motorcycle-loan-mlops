@@ -21,6 +21,7 @@ from train import (
 
 MLFLOW_TRACKING_URI = "sqlite:///mlflow.db"
 MLFLOW_EXPERIMENT_NAME = "moto-loan-ph"
+REGISTERED_MODEL_NAME = "moto2-motorcycle-loan-default"
 RUN_NAME = "xgboost_matured_labels_v1"
 
 TEST_SIZE = 0.20
@@ -103,12 +104,18 @@ def main() -> None:
         mlflow.log_artifacts(str(ARTIFACT_DIR), artifact_path="training_artifacts")
 
         try:
-            mlflow.sklearn.log_model(
+            model_info = mlflow.sklearn.log_model(
                 sk_model=model,
                 artifact_path="model",
+                registered_model_name=REGISTERED_MODEL_NAME,
             )
+            print(f"Registered model: {REGISTERED_MODEL_NAME}")
+            print(f"Model URI: {model_info.model_uri}")
         except Exception as exc:
-            print(f"Warning: MLflow model logging failed, but artifacts were logged: {exc}")
+            print(
+                "Warning: MLflow model logging or registration failed, "
+                f"but artifacts were logged: {exc}"
+            )
 
         print("\nModel metrics:")
         for metric_name, metric_value in metrics.items():

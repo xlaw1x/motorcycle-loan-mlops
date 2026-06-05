@@ -181,6 +181,49 @@ Check the environment:
 Use `.\.venv\Scripts\python.exe -m pytest -q` instead of bare `pytest -q` so
 the tests run against the project virtual environment.
 
+## Data and Pipeline Versioning with DVC
+
+DVC is configured to make the main project workflow reproducible. The project
+includes:
+
+```text
+.dvc/config
+.dvcignore
+dvc.yaml
+```
+
+The DVC pipeline defines these stages:
+
+| Stage | Command | Purpose |
+| --- | --- | --- |
+| `validate` | `python validation/expectations.py` | Run Great Expectations validation |
+| `train` | `python training/train.py` | Train the model and save artifacts |
+| `batch_score` | `python pipeline/prefect_flow.py` | Run batch scoring |
+| `monitor` | `python monitoring/monitor_predictions.py` | Generate custom monitoring reports |
+| `delayed_evaluation` | `python retrain/delayed_label_evaluation.py` | Evaluate delayed labels and retraining decision |
+
+Run the full DVC pipeline:
+
+```powershell
+.\.venv\Scripts\python.exe -m dvc repro
+```
+
+Run one stage:
+
+```powershell
+.\.venv\Scripts\python.exe -m dvc repro train
+```
+
+Check pipeline status:
+
+```powershell
+.\.venv\Scripts\python.exe -m dvc status
+```
+
+This setup uses DVC for pipeline reproducibility. If you want full external
+data versioning later, add a DVC remote and run `dvc add` for large datasets or
+artifacts that should be stored outside Git.
+
 ## Data Validation with Great Expectations
 
 Run dataset validation:
@@ -260,6 +303,7 @@ This logs:
 - leakage guard metadata
 - model metrics
 - training artifacts
+- a registered model named `moto2-motorcycle-loan-default`
 
 The local tracking backend is:
 
@@ -285,6 +329,21 @@ The Docker MLflow service mounts:
 ./mlflow.db  -> /mlflow/mlflow.db
 ./mlruns     -> /mlflow/mlruns
 ```
+
+If the MLflow UI shows the Registry page but no registered models, run:
+
+```powershell
+.\.venv\Scripts\python.exe training/train_with_mlflow.py
+```
+
+Then refresh:
+
+```text
+http://localhost:5000/#/models
+```
+
+The registry is not populated by `training/train.py`; it is populated by
+`training/train_with_mlflow.py`.
 
 ## FastAPI Prediction Service
 

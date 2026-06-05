@@ -1,5 +1,6 @@
 fastapi
 great_expectations
+dvc
 httpx
 joblib
 matplotlib
