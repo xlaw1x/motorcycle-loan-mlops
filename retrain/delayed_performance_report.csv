@@ -1,2 +1,2 @@
 evaluation_date,matured_rows_evaluated,actual_default_rate,auc_roc,precision,recall,f1,accuracy,true_negative,false_positive,false_negative,true_positive
-2026-10-15,434,0.7995,0.8586,0.8753,0.9712,0.9208,0.8664,39,48,10,337
+2026-10-15,530,0.7811,0.8757,0.8772,0.9662,0.9195,0.8679,60,56,14,400

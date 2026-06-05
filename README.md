@@ -39,6 +39,20 @@ Because of this, MOTO² separates:
 - future outcome fields, which must never be used as model inputs
 - pending production predictions, which can only be evaluated later
 
+## Dataset Source
+
+The dataset used in this project comes from Kaggle:
+
+```text
+PH Motorcycle Loan Default Dataset (Synthetic)
+https://www.kaggle.com/datasets/patpascual/ph-motorcycle-loan-default-dataset-synthetic/data
+```
+
+The dataset is described as synthetic two-wheeler loan origination data based on
+a real Southeast Asian bank. It is used here for educational MLOps workflow
+demonstration, including validation, model training, scoring, monitoring, and
+delayed-label evaluation.
+
 ## Architecture
 
 ```text
