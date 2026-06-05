@@ -1,0 +1,8 @@
+# Add patterns for files DVC should ignore.
+.venv/
+__pycache__/
+.pytest_cache/
+mlruns/
+*.pyc
+*.pyo
+*.pyd

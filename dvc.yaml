@@ -1,0 +1,54 @@
+stages:
+  validate:
+    cmd: python validation/expectations.py
+    deps:
+      - data/raw/ph_motorcycle_loans.csv
+      - validation/expectations.py
+    outs:
+      - validation/latest_validation_report.txt
+
+  train:
+    cmd: python training/train.py
+    deps:
+      - data/raw/ph_motorcycle_loans.csv
+      - training/train.py
+    outs:
+      - training/artifacts/model.pkl
+      - training/artifacts/metrics.json
+      - training/artifacts/feature_list.json
+      - training/artifacts/confusion_matrix.png
+      - training/artifacts/feature_importance.png
+      - training/artifacts/test_predictions.csv
+
+  batch_score:
+    cmd: python pipeline/prefect_flow.py
+    deps:
+      - data/raw/ph_motorcycle_loans.csv
+      - training/artifacts/model.pkl
+      - pipeline/prefect_flow.py
+    outs:
+      - data/processed/batch_scoring_output.csv
+
+  monitor:
+    cmd: python monitoring/monitor_predictions.py
+    deps:
+      - data/raw/ph_motorcycle_loans.csv
+      - data/processed/predictions_log.csv
+      - monitoring/monitor_predictions.py
+    outs:
+      - monitoring/reports/monitoring_summary.csv
+      - monitoring/reports/numeric_drift_report.csv
+      - monitoring/reports/categorical_drift_report.csv
+      - monitoring/reports/decision_monitoring.csv
+      - monitoring/reports/monitoring_report.html
+
+  delayed_evaluation:
+    cmd: python retrain/delayed_label_evaluation.py
+    deps:
+      - data/processed/predictions_log.csv
+      - retrain/delayed_label_evaluation.py
+    outs:
+      - data/processed/predictions_log_with_matured_labels.csv
+      - retrain/matured_prediction_eval.csv
+      - retrain/delayed_performance_report.csv
+      - retrain/retraining_decision.txt
