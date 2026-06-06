@@ -783,3 +783,39 @@ docker compose up --build
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
 ```
+## MLflow Artifact Troubleshooting
+
+If a run appears in MLflow but artifacts such as `confusion_matrix.png` do not
+show, the run was probably logged with a local file artifact URI instead of the
+Docker MLflow server URI.
+
+Use this sequence for demo runs:
+
+```powershell
+docker compose up -d mlflow
+$env:MLFLOW_TRACKING_URI="http://localhost:5000"
+$env:MLFLOW_EXPERIMENT_NAME="moto2-loan-ph"
+.\.venv\Scripts\python.exe training\train_with_mlflow.py
+docker compose restart mlflow
+```
+
+Then open:
+
+```text
+http://localhost:5000
+```
+
+Click the latest run and check:
+
+```text
+Artifacts -> training_artifacts -> confusion_matrix.png
+```
+
+The local-only fallback still works:
+
+```powershell
+.\.venv\Scripts\python.exe training\train_with_mlflow.py
+```
+
+But local-only runs may not show artifacts correctly in the Docker MLflow UI if
+their artifact URI points to a Windows path.
